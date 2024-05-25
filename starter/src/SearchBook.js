@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Bookshelf from "./Bookshelf";
 import { isEmpty, reduce, filter, concat } from "lodash";
 import { getAll, search, update } from "./BooksAPI";
@@ -8,23 +8,20 @@ import { HOME_PAGE } from "./AppRoutes";
 import Modal from "react-modal";
 
 const SearchBook = () => {
-  const inputRef = useRef(null);
+  const [query, setQuery] = useState("");
   const [listBook, setListBook] = useState();
   const [modalStatus, setModalStatus] = useState(false);
   const [listBookSearch, setListBookSearch] = useState();
-  const [listBookSearchDisplay, setListBookSearchDisplay] = useState();
+  const [listBookSearchDisplay, setListBookSearchDisplay] = useState([]);
+
+  const handleInputChange = (event) => {
+    setQuery(event.target.value);
+  };
 
   const getAllBook = async () => {
     const allBook = await getAll();
     if (!isEmpty(allBook)) {
       setListBook(allBook);
-    }
-  };
-
-  const handleSearchBook = async (query) => {
-    const resultList = await search(query);
-    if (!isEmpty(resultList)) {
-      setListBookSearch(resultList);
     }
   };
 
@@ -41,19 +38,51 @@ const SearchBook = () => {
   }, []);
 
   useEffect(() => {
-    if (!isEmpty(listBook) && !isEmpty(listBookSearch)) {
+    let typingTimer = null;
+    clearTimeout(typingTimer);
+
+    typingTimer = setTimeout(async () => {
+      if (!isEmpty(query)) {
+        const resultList = await search(query);
+        if (resultList && !resultList.error) {
+          setListBookSearch(resultList);
+        } else {
+          setListBookSearchDisplay([]);
+        }
+      } else {
+        setListBookSearchDisplay([]);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(typingTimer);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    if (isEmpty(listBook) && !isEmpty(listBookSearch)) {
+      setListBookSearchDisplay(listBookSearch);
+    } else if (!isEmpty(listBookSearch)) {
       const newListBookSearch = reduce(
         listBookSearch,
         (result, bookInfo) => {
-          const bookAdded = filter(listBook, ["id", bookInfo.id]);
-          if (!isEmpty(bookAdded)) {
-            return concat(result || [], bookAdded);
+          if (
+            !isEmpty(bookInfo?.imageLinks?.thumbnail) &&
+            !isEmpty(bookInfo?.authors)
+          ) {
+            const bookAdded = filter(listBook, ["id", bookInfo.id]);
+            if (!isEmpty(bookAdded)) {
+              return concat(result || [], bookAdded);
+            }
+            return concat(result || [], bookInfo);
           }
-          return concat(result || [], bookInfo);
+          return result || [];
         },
         []
       );
       setListBookSearchDisplay(newListBookSearch);
+    } else {
+      setListBookSearchDisplay([]);
     }
   }, [listBook, listBookSearch]);
 
@@ -65,17 +94,12 @@ const SearchBook = () => {
         </Link>
         <div className="search-books-input-wrapper">
           <input
-            ref={inputRef}
             type="text"
+            value={query}
+            onChange={handleInputChange}
             placeholder="Search by title, author, or ISBN"
           />
         </div>
-        <button
-          className="btn-search"
-          onClick={() => handleSearchBook(inputRef.current.value)}
-        >
-          Search
-        </button>
       </div>
       <div className="search-books-results">
         {!isEmpty(listBookSearchDisplay) && (
@@ -89,6 +113,7 @@ const SearchBook = () => {
       <Modal
         isOpen={modalStatus}
         contentLabel="Status Modal"
+        appElement={document.getElementById("root")}
         onRequestClose={() => setModalStatus(!modalStatus)}
       >
         <h2>SUCCESS</h2>

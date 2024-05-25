@@ -1,8 +1,17 @@
 # MyReads Project
 
-This is the starter template for the final assessment project for Udacity's React Fundamentals course. The goal of this template is to save you time by providing a static example of the CSS and HTML markup that may be used, but without any of the React code that is needed to complete the project. If you choose to start with this template, your job will be to add interactivity to the app by refactoring the static code in this template.
+MyReads is an online book management application that allows users to track and categorize books into three shelves: "Currently Reading", "Want to Read" and "Read".
 
-Of course, you are free to start this project from scratch if you wish! Just be sure to use [Create React App](https://reactjs.org/docs/create-a-new-react-app.html) to bootstrap the project.
+Key features:
+Search for books: Users can search for books from a large database by entering keywords.
+Categorize books: Users can add books to different shelves to track their reading progress.
+Move books between shelves: Users can easily move books between shelves as their reading status changes.
+Intuitive interface: The application has a user-friendly interface that is easy to use and displays book information clearly and attractively.
+
+Technologies used:
+React: A popular JavaScript library for building user interfaces.
+React Router: Manages navigation between pages in the application.
+Backend API: Provides book data and allows book searching.
 
 ## TL;DR
 

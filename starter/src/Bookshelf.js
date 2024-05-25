@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { map } from "lodash";
 
 const Bookshelf = (props) => {
-  const { listBook, currentShelf, bookshelfTitle, handleUpdateBookself } = props;
+  const { listBook, bookshelfTitle, handleUpdateBookself } = props;
 
   return (
     <div className="bookshelf">
@@ -27,12 +27,12 @@ const Bookshelf = (props) => {
                     ></div>
                     <div className="book-shelf-changer">
                       <select
-                        value={currentShelf || shelf}
+                        value={shelf || "none"}
                         onChange={(e) =>
                           handleUpdateBookself(bookInfo, e.target.value)
                         }
                       >
-                        <option value="none" disabled>
+                        <option value="" disabled>
                           Move to...
                         </option>
                         <option value="currentlyReading">
@@ -64,7 +64,6 @@ const Bookshelf = (props) => {
 
 Bookshelf.propTypes = {
   listBook: PropTypes.array,
-  currentShelf: PropTypes.string,
   bookshelfTitle: PropTypes.string,
   handleUpdateBookself: PropTypes.func,
 };

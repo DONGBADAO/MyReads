@@ -46,10 +46,10 @@ const SearchBook = () => {
         listBookSearch,
         (result, bookInfo) => {
           const bookAdded = filter(listBook, ["id", bookInfo.id]);
-          if (isEmpty(bookAdded)) {
-            return concat(result || [], bookInfo);
+          if (!isEmpty(bookAdded)) {
+            return concat(result || [], bookAdded);
           }
-          return result;
+          return concat(result || [], bookInfo);
         },
         []
       );
@@ -80,7 +80,6 @@ const SearchBook = () => {
       <div className="search-books-results">
         {!isEmpty(listBookSearchDisplay) && (
           <Bookshelf
-            currentShelf="none"
             bookshelfTitle="Search results"
             listBook={listBookSearchDisplay}
             handleUpdateBookself={addBookself}
